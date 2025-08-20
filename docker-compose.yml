@@ -1,20 +1,40 @@
-version: "3.8"
+version: "3.9"
 
 services:
   mongo:
-    build: ./OrdersService/MongoDB
-    container_name: orders-service-mongo
-    restart: always
+    image: mongo:7.0
+    container_name: orders-mongo
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ordersdb
+    volumes:
+      - mongo-data:/data/db
 
-  backend:
-    build: ./OrdersService
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: orders-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  orders-service:
+    build:
+      context: ./OrdersService
+      dockerfile: Dockerfile
     container_name: orders-service
-    restart: always
-    env_file:
-      - ./OrdersService/.env
     ports:
       - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGODB_URL: mongodb://mongo:27017/ordersdb
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       - mongo
+      - rabbitmq
+
+volumes:
+  mongo-data:

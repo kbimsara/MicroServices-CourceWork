@@ -1,108 +1,37 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const Order = require('./models/order.model');
-require('dotenv').config();
+const ordersRouter = require('./routes/orders');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 
 const app = express();
-
-// Middleware
 app.use(express.json());
 
-// Environment variables
 const PORT = process.env.PORT || 3000;
 const MONGODB_URL = process.env.MONGODB_URL;
 
+// Swagger setup
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: { title: 'Orders Service API', version: '1.0.0' }
+    },
+    apis: ['./routes/*.js']
+};
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Routes
+app.use('/orders', ordersRouter);
+
 // Default route
-app.get('/', (req, res) => {
-    res.send('Welcome to the Orders Service');
-});
-
-// Create order
-app.post('/orders', async (req, res) => {
-    const { userId, productId, amount, quantity } = req.body;
-
-    if (!userId || !productId || !amount || !quantity) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    try {
-        const order = new Order({ userId, productId, amount, quantity });
-        await order.save();
-        res.status(201).json(order);
-    } catch (error) {
-        console.error('Error creating order:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Get all orders
-app.get('/orders', async (req, res) => {
-    try {
-        const orders = await Order.find();
-        res.json(orders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Update order status
-app.patch('/orders/:orderId/status', async (req, res) => {
-    const { orderId } = req.params;
-    const { status } = req.body;
-
-    // Validate status
-    const validStatuses = ['pending', 'completed', 'cancelled'];
-    if (!status || !validStatuses.includes(status)) {
-        return res.status(400).json({ error: 'Invalid status' });
-    }
-
-    try {
-        const order = await Order.findByIdAndUpdate(
-            orderId, 
-            { status }, 
-            { new: true } // return updated document
-        );
-
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
-
-        res.json(order);
-    } catch (error) {
-        console.error('Error updating order status:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Delete order
-app.delete('/orders/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-
-    try {
-        const order = await Order.findByIdAndDelete(orderId);
-
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
-
-        res.json({ message: 'Order deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting order:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+app.get('/', (req, res) => res.send('Welcome to Orders Service'));
 
 // MongoDB connection
-mongoose.connect(MONGODB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => {
-    console.log('Connected to MongoDB');
-    // Start server only after DB connection
-    app.listen(PORT, () => {
-        console.log(`Orders Service is running on port ${PORT}`);
-    });
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
-});
+mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log('MongoDB connected');
+        app.listen(PORT, () => console.log(`Orders Service running on port ${PORT}`));
+    })
+    .catch(err => console.error('MongoDB connection error:', err));
