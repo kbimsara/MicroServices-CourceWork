@@ -11,6 +11,11 @@ const OrderSchema = new mongoose.Schema({
         required: true,
         ref: 'Product'
     },
+    amount: {
+        type: Number,
+        required: true,
+        min: 1
+    },
     quantity: {
         type: Number,
         required: true,
@@ -26,3 +31,6 @@ const OrderSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+
+module.exports = mongoose.model('Order', OrderSchema);
