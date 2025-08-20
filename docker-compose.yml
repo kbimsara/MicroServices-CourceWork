@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  mongo:
+    build: ./OrdersService/MongoDB
+    container_name: orders-service-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  backend:
+    build: ./OrdersService
+    container_name: orders-service
+    restart: always
+    env_file:
+      - ./OrdersService/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
