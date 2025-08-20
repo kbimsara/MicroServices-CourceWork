@@ -75,6 +75,24 @@ app.patch('/orders/:orderId/status', async (req, res) => {
     }
 });
 
+// Delete order
+app.delete('/orders/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+        const order = await Order.findByIdAndDelete(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // MongoDB connection
 mongoose.connect(MONGODB_URL, {
     useNewUrlParser: true,
