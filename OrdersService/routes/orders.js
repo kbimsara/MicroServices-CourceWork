@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const checkJwt = require('../middleware/auth');
 const { createOrder, getOrders, updateStatus, deleteOrder } = require('../controllers/ordersController');
+
+router.use(checkJwt);
 
 /**
  * @swagger
@@ -158,5 +161,20 @@ const { createOrder, getOrders, updateStatus, deleteOrder } = require('../contro
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: Get all orders
+ *     responses:
+ *       200:
+ *         description: List of orders
+ */
+router.get("/", async (req, res) => {
+  const orders = await Order.find();
+  res.json(orders);
+});
+
 
 module.exports = router;
