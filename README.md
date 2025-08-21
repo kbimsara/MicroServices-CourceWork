@@ -45,7 +45,27 @@ All services:
 
 ## Folder Structure (for each service)
 ```
-service-name/
+Order-Service/
+├─ controllers/        # Business logic
+├─ models/             # MongoDB models
+├─ routes/             # Express routes
+├─ utils/              # Utility files (RabbitMQ connection, helpers)
+├─ middleware/         # JWT authentication
+├─ index.js            # Entry point
+├─ package.json        # NPM dependencies
+└─ Dockerfile          # Docker build configuration
+
+Payment-Service/
+├─ controllers/        # Business logic
+├─ models/             # MongoDB models
+├─ routes/             # Express routes
+├─ utils/              # Utility files (RabbitMQ connection, helpers)
+├─ middleware/         # JWT authentication
+├─ index.js            # Entry point
+├─ package.json        # NPM dependencies
+└─ Dockerfile          # Docker build configuration
+
+Shipping-Service/
 ├─ controllers/        # Business logic
 ├─ models/             # MongoDB models
 ├─ routes/             # Express routes
