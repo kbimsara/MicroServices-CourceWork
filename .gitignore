@@ -1,4 +1,10 @@
 OrdersService/node_modules
 OrdersService/.env
 
+PaymentService/node_modules
+PaymentService/.env
+
+ShippingService/node_modules
+ShippingService/.env
+
 Aouth key.txt
