@@ -6,7 +6,31 @@ services:
     container_name: orders-service
     env_file: ./OrdersService/.env
     ports:
-      - "3000:3000"
+      - "3000:3000"   # Swagger: http://localhost:3000/api-docs
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - soanet
+
+  payment-service:
+    build: ./PaymentService
+    container_name: payment-service
+    env_file: ./PaymentService/.env
+    ports:
+      - "3001:3001"   # Swagger: http://localhost:3001/api-docs
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - soanet
+
+  shipping-service:
+    build: ./ShippingService
+    container_name: shipping-service
+    env_file: ./ShippingService/.env
+    ports:
+      - "3002:3002"   # Swagger: http://localhost:3002/api-docs
     depends_on:
       - mongo
       - rabbitmq
@@ -15,7 +39,7 @@ services:
 
   mongo:
     image: mongo:7.0
-    container_name: orders-mongo
+    container_name: soadb
     ports:
       - "27017:27017"
     volumes:
@@ -25,10 +49,10 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: orders-rabbitmq
+    container_name: soarbmq
     ports:
-      - "5672:5672"       # AMQP
-      - "15672:15672"     # Management UI
+      - "5672:5672"       # AMQP for services
+      - "15672:15672"     # RabbitMQ Management UI
     networks:
       - soanet
 
