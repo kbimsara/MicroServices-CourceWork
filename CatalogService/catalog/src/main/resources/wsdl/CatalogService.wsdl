@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://catalog.globalbooks.com/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    targetNamespace="http://catalog.globalbooks.com/"
+    name="CatalogService">
+
+  <types>
+    <xs:schema targetNamespace="http://catalog.globalbooks.com/" elementFormDefault="qualified">
+      <xs:complexType name="Product">
+        <xs:sequence>
+          <xs:element name="id" type="xs:string"/>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="description" type="xs:string"/>
+          <xs:element name="price" type="xs:double"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:element name="getProductByIdRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="productId" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="getProductByIdResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Product" type="tns:Product" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="listProductsRequest" type="xs:anyType"/>
+      <xs:element name="listProductsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Product" type="tns:Product" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="searchProductsRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="keyword" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="searchProductsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Product" type="tns:Product" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </types>
+
+  <message name="getProductByIdRequest">
+    <part name="parameters" element="tns:getProductByIdRequest"/>
+  </message>
+  <message name="getProductByIdResponse">
+    <part name="parameters" element="tns:getProductByIdResponse"/>
+  </message>
+
+  <message name="listProductsRequest">
+    <part name="parameters" element="tns:listProductsRequest"/>
+  </message>
+  <message name="listProductsResponse">
+    <part name="parameters" element="tns:listProductsResponse"/>
+  </message>
+
+  <message name="searchProductsRequest">
+    <part name="parameters" element="tns:searchProductsRequest"/>
+  </message>
+  <message name="searchProductsResponse">
+    <part name="parameters" element="tns:searchProductsResponse"/>
+  </message>
+
+  <portType name="CatalogService">
+    <operation name="getProductById">
+      <input message="tns:getProductByIdRequest"/>
+      <output message="tns:getProductByIdResponse"/>
+    </operation>
+    <operation name="listProducts">
+      <input message="tns:listProductsRequest"/>
+      <output message="tns:listProductsResponse"/>
+    </operation>
+    <operation name="searchProducts">
+      <input message="tns:searchProductsRequest"/>
+      <output message="tns:searchProductsResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="CatalogServiceSoapBinding" type="tns:CatalogService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getProductById">
+      <soap:operation soapAction="getProductById"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="listProducts">
+      <soap:operation soapAction="listProducts"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="searchProducts">
+      <soap:operation soapAction="searchProducts"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+
+  <service name="CatalogServiceService">
+    <port name="CatalogServicePort" binding="tns:CatalogServiceSoapBinding">
+      <soap:address location="http://localhost:8080/CatalogService/ws/catalog"/>
+    </port>
+  </service>
+</definitions>
