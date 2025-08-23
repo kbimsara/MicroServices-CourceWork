@@ -1,0 +1,100 @@
+<wsdl:definitions
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://catalog.globalbooks/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        name="CatalogService"
+        targetNamespace="http://catalog.globalbooks/">
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://catalog.globalbooks/"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:element name="getProductById">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="productId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getProductByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="product" type="tns:product" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getAllProducts">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="getAllProductsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="product" type="tns:product" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:complexType name="product">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="price" type="xsd:double"/>
+                    <xsd:element name="quantity" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="GetProductByIdRequest">
+        <wsdl:part element="tns:getProductById" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="GetProductByIdResponse">
+        <wsdl:part element="tns:getProductByIdResponse" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="GetAllProductsRequest">
+        <wsdl:part element="tns:getAllProducts" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="GetAllProductsResponse">
+        <wsdl:part element="tns:getAllProductsResponse" name="parameters"/>
+    </wsdl:message>
+
+    <wsdl:portType name="CatalogServicePort">
+        <wsdl:operation name="getProductById">
+            <wsdl:input message="tns:GetProductByIdRequest"/>
+            <wsdl:output message="tns:GetProductByIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAllProducts">
+            <wsdl:input message="tns:GetAllProductsRequest"/>
+            <wsdl:output message="tns:GetAllProductsResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="CatalogServicePortBinding" type="tns:CatalogServicePort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="getProductById">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllProducts">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="CatalogService">
+        <wsdl:port binding="tns:CatalogServicePortBinding" name="CatalogServicePort">
+            <soap:address location="http://localhost:8080/CatalogService/CatalogService"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

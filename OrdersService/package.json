@@ -20,7 +20,8 @@
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "soap": "^0.49.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

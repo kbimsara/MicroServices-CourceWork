@@ -1,0 +1,108 @@
+<con:soapui-project xmlns:con="http://eviware.com/soapui/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  id="00000000-0000-0000-0000-000000000001" 
+  name="CatalogService-SOAPUI Project" 
+  resourceRoot="E:\Github\MicroServices-CourceWork\CatalogService">
+  
+  <con:settings/>
+  
+  <con:interface xsi:type="con:WsdlInterface" 
+                 id="a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1" 
+                 wsdlURL="E:\Github\MicroServices-CourceWork\CatalogService/src/main/resources/wsdl/CatalogService.wsdl" 
+                 name="CatalogServiceSoapBinding" 
+                 type="wsdl">
+    
+    <con:settings/>
+    
+    <con:endpoints>
+      <con:endpoint>http://localhost:8080/CatalogService/CatalogService</con:endpoint>
+    </con:endpoints>
+
+    <!-- getProductById -->
+    <con:operation id="b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2" isOneWay="false" action="getProductById">
+      <con:name>getProductById</con:name>
+      <con:request id="c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value="getProductById"/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks/">
+  <soapenv:Header>
+    <wsse:Security soapenv:mustUnderstand="1"
+      xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+      xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+      <wsse:UsernameToken>
+        <wsse:Username>clientuser</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+      </wsse:UsernameToken>
+    </wsse:Security>
+  </soapenv:Header>
+  <soapenv:Body>
+    <cat:getProductById>
+      <productId>1</productId>
+    </cat:getProductById>
+  </soapenv:Body>
+</soapenv:Envelope>
+        ]]></con:request>
+
+        <con:assertion type="Simple Contains" name="Contains Product ID Assertion">
+          <con:configuration>
+            <token>1</token>
+            <caseSensitive>true</caseSensitive>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Contains Product Name Assertion">
+          <con:configuration>
+            <token>The Lord of the Rings</token>
+            <caseSensitive>false</caseSensitive>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+
+    <!-- getAllProducts -->
+    <con:operation id="d4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4" isOneWay="false" action="getAllProducts">
+      <con:name>getAllProducts</con:name>
+      <con:request id="e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value="getAllProducts"/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cat="http://catalog.globalbooks/">
+  <soapenv:Header>
+    <wsse:Security soapenv:mustUnderstand="1"
+      xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+      xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+      <wsse:UsernameToken>
+        <wsse:Username>clientuser</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+      </wsse:UsernameToken>
+    </wsse:Security>
+  </soapenv:Header>
+  <soapenv:Body>
+    <cat:getAllProducts/>
+  </soapenv:Body>
+</soapenv:Envelope>
+        ]]></con:request>
+
+        <con:assertion type="Simple Contains" name="Contains Multiple Products Assertion">
+          <con:configuration>
+            <token>The Lord of the Rings</token>
+            <caseSensitive>false</caseSensitive>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" name="Contains Product Count Assertion">
+          <con:configuration>
+            <path>count(//*[local-name()='product'])</path>
+            <expectedValue>2</expectedValue>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+
+  </con:interface>
+
+  <con:properties/>
+  <con:wssContainer/>
+</con:soapui-project>

@@ -1,6 +1,14 @@
 version: '3.8'
 
 services:
+  catalogservice:
+    build:
+      context: ./CatalogService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: ./CatalogService/.env
+
   orders-service:
     build: ./OrdersService
     container_name: orders-service
@@ -53,6 +61,9 @@ services:
     ports:
       - "5672:5672"       # AMQP for services
       - "15672:15672"     # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - soanet
 
@@ -62,3 +73,7 @@ networks:
 
 volumes:
   mongo-data:
+
+secrets:
+  aouth_key:
+    file: ./Aouth key.txt

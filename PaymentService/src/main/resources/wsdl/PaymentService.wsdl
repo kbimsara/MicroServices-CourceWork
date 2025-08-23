@@ -1,0 +1,174 @@
+<wsdl:definitions
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://payments.globalbooks/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        name="PaymentService"
+        targetNamespace="http://payments.globalbooks/">
+
+    <!-- Payment Service WSDL Definition -->
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://payments.globalbooks/"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <!-- Payment Type -->
+            <xsd:complexType name="payment">
+                <xsd:sequence>
+                    <xsd:element name="_id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="orderId" type="xsd:string"/>
+                    <xsd:element name="userId" type="xsd:string"/>
+                    <xsd:element name="amount" type="xsd:double"/>
+                    <xsd:element name="method" type="tns:paymentMethod"/>
+                    <xsd:element name="status" type="tns:paymentStatus" minOccurs="0"/>
+                    <xsd:element name="createdAt" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="updatedAt" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Payment Method Enum -->
+            <xsd:simpleType name="paymentMethod">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="credit_card"/>
+                    <xsd:enumeration value="paypal"/>
+                    <xsd:enumeration value="bank_transfer"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <!-- Payment Status Enum -->
+            <xsd:simpleType name="paymentStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="pending"/>
+                    <xsd:enumeration value="completed"/>
+                    <xsd:enumeration value="failed"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <!-- Messages for Operations -->
+            <xsd:element name="createPayment">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="payment" type="tns:payment"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="createPaymentResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="payment" type="tns:payment"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getPaymentById">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="paymentId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getPaymentByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="payment" type="tns:payment" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getAllPayments">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="getAllPaymentsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="payment" type="tns:payment" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="updatePaymentStatus">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="paymentId" type="xsd:string"/>
+                        <xsd:element name="status" type="tns:paymentStatus"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="updatePaymentStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="payment" type="tns:payment" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- PortType defines the operations -->
+    <wsdl:portType name="PaymentServicePort">
+        <wsdl:operation name="createPayment">
+            <wsdl:input message="tns:createPaymentRequest"/>
+            <wsdl:output message="tns:createPaymentResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPaymentById">
+            <wsdl:input message="tns:getPaymentByIdRequest"/>
+            <wsdl:output message="tns:getPaymentByIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPayments">
+            <wsdl:input message="tns:getAllPaymentsRequest"/>
+            <wsdl:output message="tns:getAllPaymentsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="updatePaymentStatus">
+            <wsdl:input message="tns:updatePaymentStatusRequest"/>
+            <wsdl:output message="tns:updatePaymentStatusResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <!-- Binding specifies the message format and protocol details -->
+    <wsdl:binding name="PaymentServicePortBinding" type="tns:PaymentServicePort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="createPayment">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPaymentById">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPayments">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="updatePaymentStatus">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <!-- Service and Port -->
+    <wsdl:service name="PaymentService">
+        <wsdl:port binding="tns:PaymentServicePortBinding" name="PaymentServicePort">
+            <soap:address location="http://localhost:3001/ws/payments"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

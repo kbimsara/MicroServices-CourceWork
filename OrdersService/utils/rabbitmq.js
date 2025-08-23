@@ -7,6 +7,17 @@ async function connectRabbitMQ() {
   channel = await connection.createChannel();
 }
 
+async function consume(queue, callback) {
+  if (!channel) await connectRabbitMQ();
+  await channel.assertQueue(queue, { durable: true });
+  channel.consume(queue, (msg) => {
+    if (msg !== null) {
+      callback(JSON.parse(msg.content.toString()));
+      channel.ack(msg);
+    }
+  });
+}
+
 async function publish(queue, message) {
   if (!channel) await connectRabbitMQ();
   await channel.assertQueue(queue, { durable: true });
@@ -15,4 +26,4 @@ async function publish(queue, message) {
   });
 }
 
-module.exports = { publish };
+module.exports = { publish, consume };
