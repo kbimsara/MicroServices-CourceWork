@@ -1,0 +1,193 @@
+<wsdl:definitions
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://shipping.globalbooks/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        name="ShippingService"
+        targetNamespace="http://shipping.globalbooks/">
+
+    <!-- Shipping Service WSDL Definition -->
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://shipping.globalbooks/"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <!-- Shipping Type -->
+            <xsd:complexType name="shipping">
+                <xsd:sequence>
+                    <xsd:element name="_id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="orderId" type="xsd:string"/>
+                    <xsd:element name="userId" type="xsd:string"/>
+                    <xsd:element name="address" type="xsd:string"/>
+                    <xsd:element name="status" type="tns:shippingStatus" minOccurs="0"/>
+                    <xsd:element name="createdAt" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="updatedAt" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Shipping Status Enum -->
+            <xsd:simpleType name="shippingStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="pending"/>
+                    <xsd:enumeration value="shipped"/>
+                    <xsd:enumeration value="delivered"/>
+                    <xsd:enumeration value="cancelled"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <!-- Messages for Operations -->
+            <xsd:element name="createShipping">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shipping" type="tns:shipping"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="createShippingResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shipping" type="tns:shipping"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getShippingById">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shippingId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getShippingByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shipping" type="tns:shipping" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getAllShippings">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="getAllShippingsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shipping" type="tns:shipping" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="updateShippingStatus">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shippingId" type="xsd:string"/>
+                        <xsd:element name="status" type="tns:shippingStatus"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="updateShippingStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shipping" type="tns:shipping" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="deleteShipping">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="shippingId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="deleteShippingResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="success" type="xsd:boolean"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- PortType defines the operations -->
+    <wsdl:portType name="ShippingServicePort">
+        <wsdl:operation name="createShipping">
+            <wsdl:input message="tns:createShippingRequest"/>
+            <wsdl:output message="tns:createShippingResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getShippingById">
+            <wsdl:input message="tns:getShippingByIdRequest"/>
+            <wsdl:output message="tns:getShippingByIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAllShippings">
+            <wsdl:input message="tns:getAllShippingsRequest"/>
+            <wsdl:output message="tns:getAllShippingsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateShippingStatus">
+            <wsdl:input message="tns:updateShippingStatusRequest"/>
+            <wsdl:output message="tns:updateShippingStatusResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteShipping">
+            <wsdl:input message="tns:deleteShippingRequest"/>
+            <wsdl:output message="tns:deleteShippingResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <!-- Binding specifies the message format and protocol details -->
+    <wsdl:binding name="ShippingServicePortBinding" type="tns:ShippingServicePort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="createShipping">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getShippingById">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllShippings">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateShippingStatus">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteShipping">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <!-- Service and Port -->
+    <wsdl:service name="ShippingService">
+        <wsdl:port binding="tns:ShippingServicePortBinding" name="ShippingServicePort">
+            <soap:address location="http://localhost:3002/ws/shipping"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

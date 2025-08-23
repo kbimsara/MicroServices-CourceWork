@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="00000000-0000-0000-0000-000000000003" name="PaymentService-SOAPUI Project" resourceRoot="${projectDir}" activeEnvironment="Default" abortOnError="false" runType="SEQUENTIAL" soapui-version="5.9.0" xmlns:con="http://eviware.com/soapui/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <con:settings/>
+  <con:interface xsi:type="con:WsdlInterface" id="m1m1m1m1-m1m1-m1m1-m1m1-m1m1m1m1m1m1" wsdlURL="file:///E:/Github/MicroServices-CourceWork/PaymentService/src/main/resources/wsdl/PaymentService.wsdl" name="PaymentServicePortBinding" type="wsdl" wsaVersion="NONE">
+    <con:settings/>
+    
+    <con:definitionCache type="TEXT"/><con:endpoints>
+      <con:endpoint>http://localhost:3001/ws/payments</con:endpoint>
+    </con:endpoints>
+    <con:operation id="n1n1n1n1-n1n1-n1n1-n1n1-n1n1n1n1n1n1" isOneWay="false" action="">
+      <con:name>createPayment</con:name>
+      <con:request id="o1o1o1o1-o1o1-o1o1-o1o1-o1o1o1o1o1o1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+          <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="http://payments.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <pay:createPayment>
+                <payment>
+                  <orderId>order789</orderId>
+                  <userId>user123</userId>
+                  <amount>150.00</amount>
+                  <method>credit_card</method>
+                </payment>
+              </pay:createPayment>
+            </soapenv:Body>
+          </soapenv:Envelope>
+        ]]></con:request>
+        <con:assertion type="Simple Contains" name="Contains Payment ID Assertion">
+          <con:configuration>
+            <token>_id</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>true</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    <con:settings/></con:operation>
+    <con:operation id="p1p1p1p1-p1p1-p1p1-p1p1-p1p1p1p1p1p1" isOneWay="false" action="">
+      <con:name>getPaymentById</con:name>
+      <con:request id="q1q1q1q1-q1q1-q1q1-q1q1-q1q1q1q1q1q1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+          <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="http://payments.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <pay:getPaymentById>
+                <paymentId>payment001</paymentId>
+              </pay:getPaymentById>
+            </soapenv:Body>
+          </soapenv:Envelope>
+        ]]></con:request>
+        <con:assertion type="Simple Contains" name="Contains Payment Details Assertion">
+          <con:configuration>
+            <token>payment001</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>false</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    <con:settings/></con:operation>
+    <con:operation id="r1r1r1r1-r1r1-r1r1-r1r1-r1r1r1r1r1r1" isOneWay="false" action="">
+      <con:name>getAllPayments</con:name>
+      <con:request id="s1s1s1s1-s1s1-s1s1-s1s1-s1s1s1s1s1s1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+          <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="http://payments.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <pay:getAllPayments/>
+            </soapenv:Body>
+          </soapenv:Envelope>
+        ]]></con:request>
+        <con:assertion type="Simple Contains" name="Contains Multiple Payments Assertion">
+          <con:configuration>
+            <token>payment</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>true</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    <con:settings/></con:operation>
+    <con:operation id="t1t1t1t1-t1t1-t1t1-t1t1-t1t1t1t1t1t1" isOneWay="false" action="">
+      <con:name>updatePaymentStatus</con:name>
+      <con:request id="u1u1u1u1-u1u1-u1u1-u1u1-u1u1u1u1u1u1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request><![CDATA[
+          <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="http://payments.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <pay:updatePaymentStatus>
+                <paymentId>payment001</paymentId>
+                <status>completed</status>
+              </pay:updatePaymentStatus>
+            </soapenv:Body>
+          </soapenv:Envelope>
+        ]]></con:request>
+        <con:assertion type="Simple Contains" name="Contains Updated Status Assertion">
+          <con:configuration>
+            <token>completed</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>false</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    <con:settings/></con:operation>
+  </con:interface>
+  <con:properties/>
+  <con:wssContainer/>
+<con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

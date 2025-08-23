@@ -1,0 +1,197 @@
+<con:soapui-project xmlns:con="http://eviware.com/soapui/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="00000000-0000-0000-0000-000000000002" name="OrdersService-SOAPUI Project" resourceRoot="${projectDir}">
+  <con:settings/>
+  <con:interface xsi:type="con:WsdlInterface" id="b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1" wsdlURL="file:///E:/Github/MicroServices-CourceWork/OrdersService/src/main/resources/wsdl/OrdersService.wsdl" name="OrdersServicePortBinding" type="wsdl">
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart="file:///E:/Github/MicroServices-CourceWork/OrdersService/src/main/resources/wsdl/OrdersService.wsdl">
+    </con:definitionCache>
+    <con:endpoints>
+      <con:endpoint>http://localhost:3000/ws/orders</con:endpoint>
+    </con:endpoints>
+    <con:operation id="c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1" isOneWay="false" action="">
+      <con:name>createOrder</con:name>
+      <con:request id="d1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request>
+          <![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ord="http://orders.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <ord:createOrder>
+                <order>
+                  <userId>user123</userId>
+                  <productId>prod456</productId>
+                  <amount>150.00</amount>
+                  <quantity>2</quantity>
+                </order>
+              </ord:createOrder>
+            </soapenv:Body>
+          </soapenv:Envelope>]]>
+        </con:request>
+        <con:assertion type="Simple Contains" name="Contains Order ID Assertion">
+          <con:configuration>
+            <token>orderId</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>true</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+    <con:operation id="e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1" isOneWay="false" action="">
+      <con:name>getOrderById</con:name>
+      <con:request id="f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request>
+          <![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ord="http://orders.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <ord:getOrderById>
+                <orderId>order789</orderId>
+              </ord:getOrderById>
+            </soapenv:Body>
+          </soapenv:Envelope>]]>
+        </con:request>
+        <con:assertion type="Simple Contains" name="Contains Order Details Assertion">
+          <con:configuration>
+            <token>order789</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>false</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+    <con:operation id="g1g1g1g1-g1g1-g1g1-g1g1-g1g1g1g1g1g1" isOneWay="false" action="">
+      <con:name>getAllOrders</con:name>
+      <con:request id="h1h1h1h1-h1h1-h1h1-h1h1-h1h1h1h1h1h1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request>
+          <![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ord="http://orders.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <ord:getAllOrders/>
+            </soapenv:Body>
+          </soapenv:Envelope>]]>
+        </con:request>
+        <con:assertion type="Simple Contains" name="Contains Multiple Orders Assertion">
+          <con:configuration>
+            <token>order</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>true</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+    <con:operation id="i1i1i1i1-i1i1-i1i1-i1i1-i1i1i1i1i1i1" isOneWay="false" action="">
+      <con:name>updateOrderStatus</con:name>
+      <con:request id="j1j1j1j1-j1j1-j1j1-j1j1-j1j1j1j1j1j1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request>
+          <![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ord="http://orders.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <ord:updateOrderStatus>
+                <orderId>order789</orderId>
+                <status>completed</status>
+              </ord:updateOrderStatus>
+            </soapenv:Body>
+          </soapenv:Envelope>]]>
+        </con:request>
+        <con:assertion type="Simple Contains" name="Contains Updated Status Assertion">
+          <con:configuration>
+            <token>completed</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>false</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+    <con:operation id="k1k1k1k1-k1k1-k1k1-k1k1-k1k1k1k1k1k1" isOneWay="false" action="">
+      <con:name>deleteOrder</con:name>
+      <con:request id="l1l1l1l1-l1l1-l1l1-l1l1-l1l1l1l1l1l1" mediaType="application/xml">
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+          <con:entry key="SOAPAction" value=""/>
+          <con:entry key="Content-Type" value="text/xml;charset=UTF-8"/>
+        </con:setting>
+        <con:request>
+          <![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ord="http://orders.globalbooks/">
+            <soapenv:Header>
+              <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-A123B456C789D012E345F678">
+                  <wsse:Username>clientuser</wsse:Username>
+                  <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">clientpass</wsse:Password>
+                  <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">nonceValue</wsse:Nonce>
+                  <wsu:Created>2023-01-01T12:00:00Z</wsu:Created>
+                </wsse:UsernameToken>
+              </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+              <ord:deleteOrder>
+                <orderId>order789</orderId>
+              </ord:deleteOrder>
+            </soapenv:Body>
+          </soapenv:Envelope>]]>
+        </con:request>
+        <con:assertion type="Simple Contains" name="Contains Success Assertion">
+          <con:configuration>
+            <token>true</token>
+            <caseSensitive>true</caseSensitive>
+            <checkStyle>false</checkStyle>
+            <XPath>false</XPath>
+          </con:configuration>
+        </con:assertion>
+      </con:request>
+    </con:operation>
+  </con:interface>
+  <con:properties/>
+  <con:wssContainer/>
+</con:soapui-project>
