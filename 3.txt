@@ -1,0 +1,5 @@
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJpYXQiOjE3NTU3NTM4Nzd9.X7oWjIeohsvwuROXJ9bZc6w0DLA8DElhdu73LMTbpho
+
+
+PS E:\Github\MicroServices-CourceWork\ordersservice> node -e "console.log(require('jsonwebtoken').sign({userId:'123'}, 'dYhSx6+9k7p2z0P7x4P4WlWqkWfQb8cBqV0j7P1NZZc='))"
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJpYXQiOjE3NTU3NTM4Nzd9.X7oWjIeohsvwuROXJ9bZc6w0DLA8DElhdu73LMTbpho
