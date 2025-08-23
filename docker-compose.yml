@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  catalogservice:
+    build:
+      context: ./CatalogService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Aouth key.txt:/run/secrets/aouth_key.txt
+    environment:
+      AUTH_KEY_FILE: /run/secrets/aouth_key.txt
+    secrets:
+      - aouth_key
+
   orders-service:
     build: ./OrdersService
     container_name: orders-service
@@ -62,3 +75,7 @@ networks:
 
 volumes:
   mongo-data:
+
+secrets:
+  aouth_key:
+    file: ./Aouth key.txt

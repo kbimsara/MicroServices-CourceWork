@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:wssecurity="http://cxf.apache.org/security/wssecurity"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+http://cxf.apache.org/security/wssecurity http://cxf.apache.org/schemas/wssecurity.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+    <jaxws:endpoint
+            id="catalogServiceEndpoint"
+            implementor="globalbooks.catalog.CatalogServiceImpl"
+            address="/CatalogService">
+        <jaxws:inInterceptors>
+            <bean class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+                <constructor-arg>
+                    <map>
+                        <entry key="action" value="UsernameToken"/>
+                        <entry key="passwordType" value="PasswordText"/>
+                        <entry key="passwordCallbackRef">
+                            <ref bean="serverPasswordCallback"/>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </jaxws:inInterceptors>
+    </jaxws:endpoint>
+
+    <bean id="serverPasswordCallback" class="globalbooks.catalog.security.ServerPasswordCallback"/>
+
+</beans>

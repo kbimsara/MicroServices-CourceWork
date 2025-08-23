@@ -7,4 +7,6 @@ PaymentService/.env
 ShippingService/node_modules
 ShippingService/.env
 
+CatalogService/target
+
 Aouth key.txt
