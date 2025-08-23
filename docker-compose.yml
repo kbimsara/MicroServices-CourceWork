@@ -7,12 +7,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    volumes:
-      - ./Aouth key.txt:/run/secrets/aouth_key.txt
-    environment:
-      AUTH_KEY_FILE: /run/secrets/aouth_key.txt
-    secrets:
-      - aouth_key
+    env_file: ./CatalogService/.env
 
   orders-service:
     build: ./OrdersService
@@ -66,6 +61,9 @@ services:
     ports:
       - "5672:5672"       # AMQP for services
       - "15672:15672"     # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - soanet
 

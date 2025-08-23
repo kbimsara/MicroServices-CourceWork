@@ -74,21 +74,21 @@
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
         <wsdl:operation name="getProductById">
             <soap:operation soapAction=""/>
-            <wsdl:input>
+            <soap:input>
                 <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
+            </soap:input>
+            <soap:output>
                 <soap:body use="literal"/>
-            </wsdl:output>
+            </soap:output>
         </wsdl:operation>
         <wsdl:operation name="getAllProducts">
             <soap:operation soapAction=""/>
-            <wsdl:input>
+            <soap:input>
                 <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
+            </soap:input>
+            <soap:output>
                 <soap:body use="literal"/>
-            </wsdl:output>
+            </soap:output>
         </wsdl:operation>
     </wsdl:binding>
 

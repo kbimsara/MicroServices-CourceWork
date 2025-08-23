@@ -1,0 +1,193 @@
+<wsdl:definitions
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://orders.globalbooks/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        name="OrdersService"
+        targetNamespace="http://orders.globalbooks/">
+
+    <!-- Orders Service WSDL Definition -->
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://orders.globalbooks/"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <!-- Order Type -->
+            <xsd:complexType name="order">
+                <xsd:sequence>
+                    <xsd:element name="_id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="userId" type="xsd:string"/>
+                    <xsd:element name="productId" type="xsd:string"/>
+                    <xsd:element name="amount" type="xsd:double"/>
+                    <xsd:element name="quantity" type="xsd:int"/>
+                    <xsd:element name="status" type="tns:orderStatus" minOccurs="0"/>
+                    <xsd:element name="createdAt" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="updatedAt" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Order Status Enum -->
+            <xsd:simpleType name="orderStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="pending"/>
+                    <xsd:enumeration value="completed"/>
+                    <xsd:enumeration value="cancelled"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <!-- Messages for Operations -->
+            <xsd:element name="createOrder">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="order" type="tns:order"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="createOrderResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="order" type="tns:order"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getOrderById">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="orderId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getOrderByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="order" type="tns:order" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getAllOrders">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="getAllOrdersResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="order" type="tns:order" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="updateOrderStatus">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="orderId" type="xsd:string"/>
+                        <xsd:element name="status" type="tns:orderStatus"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="updateOrderStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="order" type="tns:order" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="deleteOrder">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="orderId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="deleteOrderResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="success" type="xsd:boolean"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- PortType defines the operations -->
+    <wsdl:portType name="OrdersServicePort">
+        <wsdl:operation name="createOrder">
+            <wsdl:input message="tns:createOrderRequest"/>
+            <wsdl:output message="tns:createOrderResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getOrderById">
+            <wsdl:input message="tns:getOrderByIdRequest"/>
+            <wsdl:output message="tns:getOrderByIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAllOrders">
+            <wsdl:input message="tns:getAllOrdersRequest"/>
+            <wsdl:output message="tns:getAllOrdersResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateOrderStatus">
+            <wsdl:input message="tns:updateOrderStatusRequest"/>
+            <wsdl:output message="tns:updateOrderStatusResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteOrder">
+            <wsdl:input message="tns:deleteOrderRequest"/>
+            <wsdl:output message="tns:deleteOrderResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <!-- Binding specifies the message format and protocol details -->
+    <wsdl:binding name="OrdersServicePortBinding" type="tns:OrdersServicePort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="createOrder">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getOrderById">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllOrders">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateOrderStatus">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteOrder">
+            <soap:operation soapAction=""/>
+            <soap:input>
+                <soap:body use="literal"/>
+            </soap:input>
+            <soap:output>
+                <soap:body use="literal"/>
+            </soap:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <!-- Service and Port -->
+    <wsdl:service name="OrdersService">
+        <wsdl:port binding="tns:OrdersServicePortBinding" name="OrdersServicePort">
+            <soap:address location="http://localhost:3000/ws/orders"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
