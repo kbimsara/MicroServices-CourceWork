@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const paymentsRoutes = require("./routes/payments");
-const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
-const soap = require("soap");
+const { connectRabbitMQ, consume, publish } = require("./utils/rabbitmq");
 const fs = require("fs");
-const PaymentSoapService = require("./PaymentSoapService");
+const Payment = require("./models/payment.model"); // Added this import for the new consumer
 
 const app = express();
 app.use(express.json());
@@ -62,12 +61,21 @@ mongoose
         console.log("Received message in PaymentService:", message);
         // Process the message, e.g., update payment status in MongoDB
       });
+
+      // Consume commands from Orchestrator
+      consume("payment.create.command", async (message) => {
+        const { correlationId, replyTo, orderId, userId, amount, method } = JSON.parse(message);
+        try {
+          const newPayment = new Payment({ orderId, userId, amount, method, status: "pending" });
+          await newPayment.save();
+          publish(replyTo, { correlationId, status: "SUCCESS", data: { paymentId: newPayment._id.toString(), status: newPayment.status } });
+        } catch (error) {
+          console.error("Error processing payment.create.command:", error);
+          publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+        }
+      });
+
     }).catch((err) => console.error("RabbitMQ connection error for PaymentService:", err));
 
-    // Setup SOAP service
-    const xml = fs.readFileSync("PaymentService/src/main/resources/wsdl/PaymentService.wsdl", "utf8");
-    soap.listen(app, "/ws/payments", PaymentSoapService, xml, () => {
-      console.log("Payment SOAP Service initialized on /ws/payments");
-    });
   })
   .catch((err) => console.error("MongoDB connection error:", err));

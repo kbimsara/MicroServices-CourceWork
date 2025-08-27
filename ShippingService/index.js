@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const shippingRoutes = require("./routes/shipments");
-const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
-const soap = require("soap");
+const { connectRabbitMQ, consume, publish } = require("./utils/rabbitmq");
 const fs = require("fs");
-const ShippingSoapService = require("./ShippingSoapService");
+const Shipping = require("./models/shipping.model"); // Added this import for the new consumer
 
 const app = express();
 app.use(express.json());
@@ -62,12 +61,21 @@ mongoose
         console.log("Received message in ShippingService:", message);
         // Process the message, e.g., update shipping status in MongoDB
       });
+
+      // Consume commands from Orchestrator
+      consume("shipping.create.command", async (message) => {
+        const { correlationId, replyTo, orderId, userId, address } = JSON.parse(message);
+        try {
+          const newShipping = new Shipping({ orderId, userId, address, status: "pending" });
+          await newShipping.save();
+          publish(replyTo, { correlationId, status: "SUCCESS", data: { shipmentId: newShipping._id.toString(), status: newShipping.status } });
+        } catch (error) {
+          console.error("Error processing shipping.create.command:", error);
+          publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+        }
+      });
+
     }).catch((err) => console.error("RabbitMQ connection error for ShippingService:", err));
 
-    // Setup SOAP service
-    const xml = fs.readFileSync("ShippingService/src/main/resources/wsdl/ShippingService.wsdl", "utf8");
-    soap.listen(app, "/ws/shipping", ShippingSoapService, xml, () => {
-      console.log("Shipping SOAP Service initialized on /ws/shipping");
-    });
   })
   .catch((err) => console.error("MongoDB connection error:", err));

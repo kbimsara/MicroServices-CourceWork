@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - soanet
     # env_file: ./CatalogService/.env
 
   orders-service:
@@ -64,6 +68,24 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - soanet
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orchestratorservice:
+    build: ./OrchestratorService
+    container_name: orchestrator-service
+    ports:
+      - "3003:3003" # Or an appropriate port for the orchestrator
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq
     networks:
       - soanet
 
