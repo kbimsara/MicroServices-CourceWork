@@ -7,16 +7,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-<<<<<<< Updated upstream
-    env_file: ./CatalogService/.env
-=======
     depends_on:
       rabbitmq:
         condition: service_healthy
     networks:
       - soanet
     # env_file: ./CatalogService/.env
->>>>>>> Stashed changes
 
   orders-service:
     build: ./OrdersService
@@ -81,8 +77,6 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     networks:
       - soanet
-<<<<<<< Updated upstream
-=======
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -102,7 +96,6 @@ services:
     env_file: ./OrchestratorService/.env
     networks:
       - soanet
->>>>>>> Stashed changes
 
 networks:
   soanet:
