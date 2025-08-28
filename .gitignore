@@ -7,6 +7,9 @@ PaymentService/.env
 ShippingService/node_modules
 ShippingService/.env
 
+OrchestratorService/node_modules
+OrchestratorService/.env
+
 CatalogService/target
 
 3.txt
