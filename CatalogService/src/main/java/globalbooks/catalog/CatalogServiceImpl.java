@@ -1,31 +1,100 @@
 package globalbooks.catalog;
 
-// Removed @WebService annotation, CXF will publish the service via Spring configuration
+import globalbooks.catalog.utils.RabbitMQPublisher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.jws.WebService;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+@WebService(endpointInterface = "globalbooks.catalog.CatalogService")
 public class CatalogServiceImpl implements CatalogService {
 
-    private List<Product> products = new ArrayList<>(Arrays.asList(
-            new Product("1", "The Lord of the Rings", "Fantasy novel by J.R.R. Tolkien", 25.00, 100),
-            new Product("2", "Pride and Prejudice", "Romantic novel by Jane Austen", 15.50, 120),
-            new Product("3", "1984", "Dystopian social science fiction novel by George Orwell", 12.00, 80),
-            new Product("4", "To Kill a Mockingbird", "Novel by Harper Lee", 10.00, 150)
-    ));
+    private static Map<String, Product> products = new HashMap<>();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Override
-    public Product getProductById(String productId) {
-        return products.stream()
-                .filter(product -> product.getId().equals(productId))
-                .findFirst()
-                .orElse(null);
+    static {
+        try {
+            RabbitMQPublisher.init();
+        } catch (IOException | TimeoutException e) {
+            System.err.println("Failed to initialize RabbitMQ Publisher: " + e.getMessage());
+            // Depending on desired behavior, re-throw or handle gracefully
+        }
+        // Sample data
+        products.put("1", new Product("1", "The Lord of the Rings", "Fantasy novel by J.R.R. Tolkien", 25.00, 100));
+        products.put("2", new Product("2", "Pride and Prejudice", "Romantic novel by Jane Austen", 15.50, 150));
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return new ArrayList<>(products);
+    public String addProduct(Product product) {
+        if (product == null) {
+            return "Product cannot be null.";
+        }
+        if (product.getId() == null || product.getId().trim().isEmpty()) {
+            return "Product ID cannot be null or empty.";
+        }
+        if (products.containsKey(product.getId())) {
+            return "Product with ID " + product.getId() + " already exists.";
+        }
+        if (product.getName() == null || product.getName().trim().isEmpty()) {
+            return "Product name cannot be null or empty.";
+        }
+        products.put(product.getId(), product);
+        try {
+            String productJson = objectMapper.writeValueAsString(product);
+            RabbitMQPublisher.publishEvent("product.created", productJson);
+        } catch (IOException e) {
+            System.err.println("Failed to publish product.created event: " + e.getMessage());
+        }
+        return "Product " + product.getName() + " added successfully.";
+    }
+
+    @Override
+    public Product getProduct(String id) {
+        Product product = products.get(id);
+        if (product == null) {
+            // Return an empty Product or throw a SOAPFaultException
+            // For simplicity, returning an empty Product here.
+            return new Product("", "", "", 0.0, 0);
+        }
+        return product;
+    }
+
+    @Override
+    public ProductList getAllProducts() {
+        return new ProductList(new ArrayList<>(products.values()));
+    }
+
+    @Override
+    public String updateProduct(Product product) {
+        if (!products.containsKey(product.getId())) {
+            return "Product with ID " + product.getId() + " not found.";
+        }
+        products.put(product.getId(), product);
+        try {
+            String productJson = objectMapper.writeValueAsString(product);
+            RabbitMQPublisher.publishEvent("product.updated", productJson);
+        } catch (IOException e) {
+            System.err.println("Failed to publish product.updated event: " + e.getMessage());
+        }
+        return "Product " + product.getName() + " updated successfully.";
+    }
+
+    @Override
+    public String deleteProduct(String id) {
+        if (!products.containsKey(id)) {
+            return "Product with ID " + id + " not found.";
+        }
+        Product removedProduct = products.remove(id);
+        try {
+            String productJson = objectMapper.writeValueAsString(removedProduct);
+            RabbitMQPublisher.publishEvent("product.deleted", productJson);
+        } catch (IOException e) {
+            System.err.println("Failed to publish product.deleted event: " + e.getMessage());
+        }
+        return "Product with ID " + id + " deleted successfully.";
     }
 }

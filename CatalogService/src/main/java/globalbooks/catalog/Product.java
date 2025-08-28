@@ -1,26 +1,15 @@
 package globalbooks.catalog;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "product", propOrder = {
-    "id",
-    "name",
-    "description",
-    "price",
-    "quantity"
-})
-public class Product {
-    @XmlElement(required = true)
-    protected String id;
-    @XmlElement(required = true)
-    protected String name;
-    protected String description;
-    protected double price;
-    protected int quantity;
+public class Product implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String id;
+    private String name;
+    private String description;
+    private double price;
+    private int quantity;
 
     public Product() {
     }
