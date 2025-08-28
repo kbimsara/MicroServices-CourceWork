@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const checkJwt = require("../middleware/auth");
 const {
   createOrder,
   getOrders,
@@ -8,8 +7,6 @@ const {
   deleteOrder,
 } = require("../controllers/ordersController");
 
-// Apply JWT middleware to all /orders routes
-router.use(checkJwt);
 
 /**
  * @swagger
@@ -24,8 +21,6 @@ router.use(checkJwt);
  *   post:
  *     summary: Create a new order
  *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -66,8 +61,6 @@ router.post("/", createOrder);
  *   get:
  *     summary: Get all orders
  *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -97,8 +90,6 @@ router.get("/", getOrders);
  *   patch:
  *     summary: Update order status
  *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderId
@@ -137,8 +128,6 @@ router.patch("/:orderId/status", updateStatus);
  *   delete:
  *     summary: Delete an order
  *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderId

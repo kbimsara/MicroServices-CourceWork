@@ -4,10 +4,17 @@ const mongoose = require("mongoose");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const shippingRoutes = require("./routes/shipments");
+<<<<<<< Updated upstream
 const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
 const soap = require("soap");
 const fs = require("fs");
 const ShippingSoapService = require("./ShippingSoapService");
+=======
+const { consume, publish } = require("./utils/rabbitmq");
+const fs = require("fs");
+
+const Shipping = require("./models/shipping.model"); // Added this import for the new consumer
+>>>>>>> Stashed changes
 
 const app = express();
 app.use(express.json());
@@ -23,15 +30,9 @@ const swaggerOptions = {
     },
     servers: [{ url: "http://localhost:3002" }],
     components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
+      // Removed securitySchemes related to JWT
     },
-    security: [{ bearerAuth: [] }],
+    // security: [{ bearerAuth: [] }],
   },
   apis: ["./routes/*.js", "./models/*.js"],
 };
@@ -54,6 +55,7 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB for ShippingService");
     app.listen(PORT, () => console.log(`ShippingService running on port ${PORT}`));
+<<<<<<< Updated upstream
     // Connect to RabbitMQ
     connectRabbitMQ().then(() => {
       console.log("Connected to RabbitMQ for ShippingService");
@@ -63,6 +65,35 @@ mongoose
         // Process the message, e.g., update shipping status in MongoDB
       });
     }).catch((err) => console.error("RabbitMQ connection error for ShippingService:", err));
+=======
+    // Set up RabbitMQ consumers
+    console.log("Setting up RabbitMQ consumers for ShippingService");
+    // Example: Consume messages from a shipping-events queue
+    consume("shipping-events", (message) => {
+      console.log("Received message in ShippingService:", message);
+      // Process the message, e.g., update shipping status in MongoDB
+    });
+
+    // Consume commands from Orchestrator
+    consume("shipping.create.command", async (message) => {
+      try {
+        
+
+        // Ensure the userId from the token matches the userId in the message if applicable
+        // if (userIdFromToken && userIdFromToken !== message.userId) {
+        //     console.warn("ShippingService: WARNING - User ID mismatch between token and message. Using message.userId.");
+        // }
+
+        const { correlationId, replyTo, orderId, userId, address } = message;
+        const newShipping = new Shipping({ orderId, userId, address, status: "pending" });
+        await newShipping.save();
+        publish(replyTo, { correlationId, status: "SUCCESS", data: { shipmentId: newShipping._id.toString(), status: newShipping.status } });
+      } catch (error) {
+        console.error("Error processing shipping.create.command:", error);
+        publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+      }
+    });
+>>>>>>> Stashed changes
 
     // Setup SOAP service
     const xml = fs.readFileSync("ShippingService/src/main/resources/wsdl/ShippingService.wsdl", "utf8");

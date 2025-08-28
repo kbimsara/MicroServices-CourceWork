@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createShipping, getShipments, updateStatus, deleteShipment } = require("../controllers/shippingController");
-const checkJwt = require("../middleware/auth");
 
-// Apply JWT middleware
-router.use(checkJwt);
 
 /**
  * @swagger
@@ -19,8 +16,6 @@ router.use(checkJwt);
  *   post:
  *     summary: Create a new shipment
  *     tags: [Shipments]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -61,8 +56,6 @@ router.post("/", createShipping);
  *   get:
  *     summary: Get all shipments
  *     tags: [Shipments]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -125,8 +118,6 @@ router.get("/", getShipments);
  *   patch:
  *     summary: Update shipment status
  *     tags: [Shipments]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: shipmentId
@@ -155,8 +146,6 @@ router.get("/", getShipments);
  *         description: Invalid input
  *       404:
  *         description: Shipment not found
- *       500:
- *         description: Internal server error
  */
 router.patch("/:shipmentId/status", updateStatus);
 
@@ -166,15 +155,12 @@ router.patch("/:shipmentId/status", updateStatus);
  *   delete:
  *     summary: Delete a shipment
  *     tags: [Shipments]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: shipmentId
  *         required: true
  *         schema:
  *           type: string
- *           example: "64f8c0a2e3d4b12abc123456"
  *         description: Shipment ID
  *     responses:
  *       200:

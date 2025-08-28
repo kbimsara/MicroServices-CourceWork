@@ -1,0 +1,11 @@
+URL: http://127.0.0.1:3003/purchase
+
+JSON Payload:
+{
+  "productId": "product_abc",
+  "quantity": 2,
+  "userId": "60c728b2f9b3c4d5e6f7a8b9",
+  "amount": 250.00,
+  "shippingAddress": "123 Main St, Anytown, USA",
+  "paymentMethod": "credit_card"
+}

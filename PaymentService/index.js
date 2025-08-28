@@ -4,10 +4,17 @@ const mongoose = require("mongoose");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const paymentsRoutes = require("./routes/payments");
+<<<<<<< Updated upstream
 const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
 const soap = require("soap");
 const fs = require("fs");
 const PaymentSoapService = require("./PaymentSoapService");
+=======
+const { consume, publish } = require("./utils/rabbitmq");
+const fs = require("fs");
+
+const Payment = require("./models/payment.model"); // Added this import for the new consumer
+>>>>>>> Stashed changes
 
 const app = express();
 app.use(express.json());
@@ -23,15 +30,9 @@ const swaggerOptions = {
     },
     servers: [{ url: "http://localhost:3001" }],
     components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
+      // Removed securitySchemes related to JWT
     },
-    security: [{ bearerAuth: [] }],
+    // security: [{ bearerAuth: [] }],
   },
   apis: ["./routes/*.js", "./models/*.js"],
 };
@@ -54,6 +55,7 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB for PaymentService");
     app.listen(PORT, () => console.log(`PaymentService running on port ${PORT}`));
+<<<<<<< Updated upstream
     // Connect to RabbitMQ
     connectRabbitMQ().then(() => {
       console.log("Connected to RabbitMQ for PaymentService");
@@ -63,6 +65,39 @@ mongoose
         // Process the message, e.g., update payment status in MongoDB
       });
     }).catch((err) => console.error("RabbitMQ connection error for PaymentService:", err));
+=======
+    // Set up RabbitMQ consumers
+    console.log("Setting up RabbitMQ consumers for PaymentService");
+    // Example: Consume messages from a payment-events queue
+    consume("payment-events", (message) => {
+      console.log("Received message in PaymentService:", message);
+      // Process the message, e.g., update payment status in MongoDB
+    });
+
+    // Consume commands from Orchestrator
+    consume("payment.create.command", async (message) => {
+      let correlationId, replyTo; // Declared outside try block
+      try {
+        console.log("PaymentService: Received payment.create.command message:", message);
+
+        ({ correlationId, replyTo, orderId, userId, amount, method } = message); // Assigned inside try block
+        console.log("PaymentService: Extracted message details:", { correlationId, replyTo, orderId, userId, amount, method });
+
+        const newPayment = new Payment({ orderId, userId, amount, method, status: "pending" });
+        console.log("PaymentService: Attempting to save new payment:", newPayment);
+        await newPayment.save();
+        console.log("PaymentService: New payment saved successfully:", newPayment);
+
+        publish(replyTo, { correlationId, status: "SUCCESS", data: { paymentId: newPayment._id.toString(), status: newPayment.status } });
+        console.log("PaymentService: Reply published for correlationId:", correlationId);
+      } catch (error) {
+        console.error("Error processing payment.create.command:", error);
+        if (correlationId && replyTo) { // Check if defined before publishing
+            publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+        }
+      }
+    });
+>>>>>>> Stashed changes
 
     // Setup SOAP service
     const xml = fs.readFileSync("PaymentService/src/main/resources/wsdl/PaymentService.wsdl", "utf8");

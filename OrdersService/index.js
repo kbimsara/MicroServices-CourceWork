@@ -1,13 +1,18 @@
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const ordersRoutes = require("./routes/orders");
+<<<<<<< Updated upstream
 const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
 const soap = require("soap");
 const fs = require("fs");
 const OrdersSoapService = require("./OrdersSoapService");
+=======
+const { consume, publish } = require("./utils/rabbitmq");
+
+const Order = require("./models/order.model"); // Added missing import for Order model
+>>>>>>> Stashed changes
 
 const app = express();
 app.use(express.json());
@@ -23,15 +28,9 @@ const swaggerOptions = {
     },
     servers: [{ url: "http://localhost:3000" }],
     components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
+      // Removed securitySchemes related to JWT
     },
-    security: [{ bearerAuth: [] }], // Apply to all endpoints by default
+    // security: [{ bearerAuth: [] }], // Apply to all endpoints by default
   },
   apis: ["./routes/*.js", "./models/*.js"],
 };
@@ -59,6 +58,7 @@ mongoose
     app.listen(PORT, () =>
       console.log(`Orders Service running on port ${PORT}`)
     );
+<<<<<<< Updated upstream
     // Connect to RabbitMQ
     connectRabbitMQ().then(() => {
       console.log("Connected to RabbitMQ");
@@ -73,6 +73,59 @@ mongoose
     const xml = fs.readFileSync("OrdersService/src/main/resources/wsdl/OrdersService.wsdl", "utf8");
     soap.listen(app, "/ws/orders", OrdersSoapService, xml, () => {
       console.log("Orders SOAP Service initialized on /ws/orders");
+=======
+    // Connect to RabbitMQ and start consuming
+    console.log("Setting up RabbitMQ consumers...");
+    // Example: Consume messages from an order-events queue
+    consume("order-events", (message) => {
+      console.log("Received message from order-events:", message);
+      // This consumer is for example purposes. If you intend to process these messages,
+      // ensure they are valid JSON and handle them accordingly.\n
+    });
+
+    // Consume commands from Orchestrator
+    consume("order.create.command", async (message) => { // Removed authorization parameter
+      let correlationId, replyTo; // Declare outside try block
+      try {
+        console.log(`OrdersService: message.userId: ${message.userId}`); // Added log
+
+        ({ correlationId, replyTo, userId, productId, amount, quantity } = message); // Assign inside try block
+        const newOrder = new Order({ userId, productId, amount, quantity, status: "pending" });
+        await newOrder.save();
+        publish(replyTo, { correlationId, status: "SUCCESS", data: { orderId: newOrder._id.toString(), status: newOrder.status } });
+      } catch (error) {
+        console.error("Error processing order.create.command:", error);
+        if (correlationId && replyTo) { // Check if defined before publishing
+            publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+        }
+      }
+    });
+
+    consume("order.update.command", async (message) => { // Removed authorization parameter
+      let correlationId, replyTo; // Declare outside try block
+      try {
+        console.log(`OrdersService: message.userId: ${message.userId}`); // Added log
+
+        ({ correlationId, replyTo, orderId, status } = message); // Assign inside try block
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+          throw new Error("Invalid Order ID");
+        }
+        const updatedOrder = await Order.findByIdAndUpdate(
+          orderId,
+          { status: status },
+          { new: true }
+        );
+        if (!updatedOrder) {
+          throw new Error("Order not found");
+        }
+        publish(replyTo, { correlationId, status: "SUCCESS", data: { orderId: updatedOrder._id.toString(), status: updatedOrder.status } });
+      } catch (error) {
+        console.error("Error processing order.update.command:", error);
+        if (correlationId && replyTo) { // Check if defined before publishing
+            publish(replyTo, { correlationId, status: "FAILED", error: error.message });
+        }
+      }
+>>>>>>> Stashed changes
     });
   })
   .catch((err) => console.error("MongoDB connection error:", err));

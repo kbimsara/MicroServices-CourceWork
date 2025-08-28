@@ -2,26 +2,30 @@ const amqp = require("amqplib");
 
 let channel;
 
-async function connectRabbitMQ() {
-  const connection = await amqp.connect(process.env.RABBITMQ_URL);
-  channel = await connection.createChannel();
+async function getChannel() {
+  if (!channel) {
+    const connection = await amqp.connect(process.env.RABBITMQ_URL);
+    channel = await connection.createChannel();
+  }
+  return channel;
 }
 
 async function consume(queue, callback) {
-  if (!channel) await connectRabbitMQ();
-  await channel.assertQueue(queue, { durable: true });
-  channel.consume(queue, (msg) => {
+  const ch = await getChannel();
+  await ch.assertQueue(queue, { durable: true });
+  ch.consume(queue, (msg) => {
     if (msg !== null) {
-      callback(JSON.parse(msg.content.toString()));
-      channel.ack(msg);
+      const parsedMessage = JSON.parse(msg.content.toString());
+      callback(parsedMessage);
+      ch.ack(msg);
     }
   });
 }
 
 async function publish(queue, message) {
-  if (!channel) await connectRabbitMQ();
-  await channel.assertQueue(queue, { durable: true });
-  channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
+  const ch = await getChannel();
+  await ch.assertQueue(queue, { durable: false, autoDelete: true }); // Added autoDelete: true
+  ch.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
     persistent: true,
   });
 }

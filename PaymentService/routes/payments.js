@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createPayment, getPayments, updateStatus } = require("../controllers/paymentsController");
-const checkJwt = require("../middleware/auth");
 
-// Apply JWT middleware to all routes
-router.use(checkJwt);
 
 /**
  * @swagger
@@ -19,8 +16,6 @@ router.use(checkJwt);
  *   post:
  *     summary: Create a new payment
  *     tags: [Payments]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -62,8 +57,6 @@ router.post("/", createPayment);
  *   get:
  *     summary: Get all payments
  *     tags: [Payments]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -83,8 +76,6 @@ router.get("/", getPayments);
  *   patch:
  *     summary: Update payment status
  *     tags: [Payments]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: paymentId
