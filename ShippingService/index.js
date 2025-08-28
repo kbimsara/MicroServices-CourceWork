@@ -4,17 +4,10 @@ const mongoose = require("mongoose");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const shippingRoutes = require("./routes/shipments");
-<<<<<<< Updated upstream
-const { connectRabbitMQ, consume } = require("./utils/rabbitmq");
-const soap = require("soap");
-const fs = require("fs");
-const ShippingSoapService = require("./ShippingSoapService");
-=======
 const { consume, publish } = require("./utils/rabbitmq");
 const fs = require("fs");
 
 const Shipping = require("./models/shipping.model"); // Added this import for the new consumer
->>>>>>> Stashed changes
 
 const app = express();
 app.use(express.json());
@@ -55,17 +48,6 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB for ShippingService");
     app.listen(PORT, () => console.log(`ShippingService running on port ${PORT}`));
-<<<<<<< Updated upstream
-    // Connect to RabbitMQ
-    connectRabbitMQ().then(() => {
-      console.log("Connected to RabbitMQ for ShippingService");
-      // Example: Consume messages from a shipping-events queue
-      consume("shipping-events", (message) => {
-        console.log("Received message in ShippingService:", message);
-        // Process the message, e.g., update shipping status in MongoDB
-      });
-    }).catch((err) => console.error("RabbitMQ connection error for ShippingService:", err));
-=======
     // Set up RabbitMQ consumers
     console.log("Setting up RabbitMQ consumers for ShippingService");
     // Example: Consume messages from a shipping-events queue
@@ -93,12 +75,6 @@ mongoose
         publish(replyTo, { correlationId, status: "FAILED", error: error.message });
       }
     });
->>>>>>> Stashed changes
 
-    // Setup SOAP service
-    const xml = fs.readFileSync("ShippingService/src/main/resources/wsdl/ShippingService.wsdl", "utf8");
-    soap.listen(app, "/ws/shipping", ShippingSoapService, xml, () => {
-      console.log("Shipping SOAP Service initialized on /ws/shipping");
-    });
   })
   .catch((err) => console.error("MongoDB connection error:", err));
