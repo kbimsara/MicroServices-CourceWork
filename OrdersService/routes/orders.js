@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   createOrder,
   getOrders,
+  getOrderById,
   updateStatus,
   deleteOrder,
 } = require("../controllers/ordersController");
@@ -83,6 +84,31 @@ router.post("/", createOrder);
  *         description: List of orders
  */
 router.get("/", getOrders);
+
+/**
+ * @swagger
+ * /orders/{orderId}:
+ *   get:
+ *     summary: Get order by ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order details
+ *       400:
+ *         description: Invalid Order ID
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:orderId", getOrderById);
 
 /**
  * @swagger

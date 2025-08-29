@@ -1,22 +1,36 @@
 {
-  "name": "orchestrator-service",
-  "version": "1.0.0",
-  "description": "Centralized Orchestrator Service for GlobalBooks Microservices",
+  "name": "esb-orchestrator-service",
+  "version": "2.0.0",
+  "description": "ESB Orchestrator Service with BPEL Workflow Engine for GlobalBooks Microservices",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Your Name",
+  "keywords": [
+    "esb",
+    "bpel",
+    "workflow",
+    "orchestration",
+    "rabbitmq",
+    "microservices",
+    "globalbooks"
+  ],
+  "author": "GlobalBooks Team",
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.10.0",
     "express": "^4.18.2",
-    
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "node-fetch": "^2.6.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

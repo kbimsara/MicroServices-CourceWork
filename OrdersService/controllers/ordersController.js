@@ -50,6 +50,27 @@ exports.getOrders = async (req, res) => {
   }
 };
 
+// Get Order by ID
+exports.getOrderById = async (req, res) => {
+  const { orderId } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).json({ error: "Invalid Order ID" });
+  }
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    
+    res.json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 // Update Order Status (returns previous + new)
 exports.updateStatus = async (req, res) => {
   const { orderId } = req.params;

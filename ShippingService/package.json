@@ -1,26 +1,20 @@
 {
-  "name": "ordersservice",
+  "name": "shipping-service",
   "version": "1.0.0",
+  "description": "Shipping Service for GlobalBooks",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "KavinduBimsara",
-  "license": "ISC",
-  "description": "This project Design for SOA Course Work",
   "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.0",
     "amqplib": "^0.10.0",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "mongodb": "^6.18.0",
-    "mongoose": "^8.17.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^4.6.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^2.0.22"
   }
 }

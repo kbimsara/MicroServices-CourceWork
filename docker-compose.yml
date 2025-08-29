@@ -12,12 +12,10 @@ services:
         condition: service_healthy
     networks:
       - soanet
-    # env_file: ./CatalogService/.env
 
   orders-service:
     build: ./OrdersService
     container_name: orders-service
-    env_file: ./OrdersService/.env
     ports:
       - "3000:3000"   # Swagger: http://localhost:3000/api-docs
     depends_on:
@@ -31,7 +29,6 @@ services:
   payment-service:
     build: ./PaymentService
     container_name: payment-service
-    env_file: ./PaymentService/.env
     ports:
       - "3001:3001"   # Swagger: http://localhost:3001/api-docs
     depends_on:
@@ -45,7 +42,6 @@ services:
   shipping-service:
     build: ./ShippingService
     container_name: shipping-service
-    env_file: ./ShippingService/.env
     ports:
       - "3002:3002"   # Swagger: http://localhost:3002/api-docs
     depends_on:
@@ -87,13 +83,10 @@ services:
     build: ./OrchestratorService
     container_name: orchestrator-service
     ports:
-      - "3003:3003" # Or an appropriate port for the orchestrator
+      - "3003:3003"
     depends_on:
       rabbitmq:
         condition: service_healthy
-    environment:
-      RABBITMQ_URL: amqp://rabbitmq
-    env_file: ./OrchestratorService/.env
     networks:
       - soanet
 

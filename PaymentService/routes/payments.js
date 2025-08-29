@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createPayment, getPayments, updateStatus } = require("../controllers/paymentsController");
+const { createPayment, getPayments, updateStatus, getPaymentById, getPaymentByOrderId } = require("../controllers/paymentsController");
 
 
 /**
@@ -69,6 +69,56 @@ router.post("/", createPayment);
  *         description: List of payments
  */
 router.get("/", getPayments);
+
+/**
+ * @swagger
+ * /payments/{paymentId}:
+ *   get:
+ *     summary: Get payment by ID
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: paymentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Payment ID
+ *     responses:
+ *       200:
+ *         description: Payment details
+ *       400:
+ *         description: Invalid Payment ID
+ *       404:
+ *         description: Payment not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:paymentId", getPaymentById);
+
+/**
+ * @swagger
+ * /payments/order/{orderId}:
+ *   get:
+ *     summary: Get payment by order ID
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Payment details
+ *       400:
+ *         description: Invalid Order ID
+ *       404:
+ *         description: Payment not found for this order
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/order/:orderId", getPaymentByOrderId);
 
 /**
  * @swagger

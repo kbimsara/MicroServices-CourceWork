@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createShipping, getShipments, updateStatus, deleteShipment } = require("../controllers/shippingController");
+const { createShipping, getShipments, updateStatus, deleteShipment, getShipmentById, getShipmentByOrderId } = require("../controllers/shippingController");
 
 
 /**
@@ -111,6 +111,56 @@ router.post("/", createShipping);
  *                         type: string
  */
 router.get("/", getShipments);
+
+/**
+ * @swagger
+ * /shipments/{shipmentId}:
+ *   get:
+ *     summary: Get shipment by ID
+ *     tags: [Shipments]
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Shipment ID
+ *     responses:
+ *       200:
+ *         description: Shipment details
+ *       400:
+ *         description: Invalid Shipment ID
+ *       404:
+ *         description: Shipment not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:shipmentId", getShipmentById);
+
+/**
+ * @swagger
+ * /shipments/order/{orderId}:
+ *   get:
+ *     summary: Get shipment by order ID
+ *     tags: [Shipments]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Shipment details
+ *       400:
+ *         description: Invalid Order ID
+ *       404:
+ *         description: Shipment not found for this order
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/order/:orderId", getShipmentByOrderId);
 
 /**
  * @swagger

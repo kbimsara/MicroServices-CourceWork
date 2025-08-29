@@ -42,6 +42,48 @@ exports.getShipments = async (req, res) => {
   }
 };
 
+// Get Shipment by ID
+exports.getShipmentById = async (req, res) => {
+  const { shipmentId } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(shipmentId)) {
+    return res.status(400).json({ error: "Invalid Shipment ID" });
+  }
+
+  try {
+    const shipment = await Shipping.findById(shipmentId);
+    if (!shipment) {
+      return res.status(404).json({ error: "Shipment not found" });
+    }
+    
+    res.json(shipment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get Shipment by Order ID
+exports.getShipmentByOrderId = async (req, res) => {
+  const { orderId } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).json({ error: "Invalid Order ID" });
+  }
+
+  try {
+    const shipment = await Shipping.findOne({ orderId: orderId });
+    if (!shipment) {
+      return res.status(404).json({ error: "Shipment not found for this order" });
+    }
+    
+    res.json(shipment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 // Update Shipping Status
 exports.updateStatus = async (req, res) => {
   const { shipmentId } = req.params;

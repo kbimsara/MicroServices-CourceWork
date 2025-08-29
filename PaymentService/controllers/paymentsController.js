@@ -43,6 +43,48 @@ exports.getPayments = async (req, res) => {
   }
 };
 
+// Get Payment by ID
+exports.getPaymentById = async (req, res) => {
+  const { paymentId } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+    return res.status(400).json({ error: "Invalid Payment ID" });
+  }
+
+  try {
+    const payment = await Payment.findById(paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: "Payment not found" });
+    }
+    
+    res.json(payment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get Payment by Order ID
+exports.getPaymentByOrderId = async (req, res) => {
+  const { orderId } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).json({ error: "Invalid Order ID" });
+  }
+
+  try {
+    const payment = await Payment.findOne({ orderId: orderId });
+    if (!payment) {
+      return res.status(404).json({ error: "Payment not found for this order" });
+    }
+    
+    res.json(payment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 // Update Payment Status
 exports.updateStatus = async (req, res) => {
   const { paymentId } = req.params;
