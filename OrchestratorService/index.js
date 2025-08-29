@@ -2,14 +2,29 @@ const express = require('express');
 const amqp = require('amqplib');
 const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch');
+const cors = require('cors');
+const helmet = require('helmet');
 const ESB_CONFIG = require('./esb-config');
 const BPELWorkflowEngine = require('./bpel-workflow-engine');
 const PlaceOrderWorkflow = require('./placeorder-workflow');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const { oauth2Middleware } = require('./oauth2-config');
+const oauth2Routes = require('./oauth2-routes');
 
 const app = express();
 const PORT = 3003;
+
+// Security middleware
+app.use(helmet());
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:8080'],
+    credentials: true
+}));
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Swagger setup
 const swaggerOptions = {
@@ -31,6 +46,29 @@ const swaggerOptions = {
             }
         ],
         components: {
+            securitySchemes: {
+                OAuth2: {
+                    type: 'oauth2',
+                    flows: {
+                        clientCredentials: {
+                            tokenUrl: '/oauth2/client-token',
+                            scopes: {
+                                'read': 'Read access to resources',
+                                'write': 'Write access to resources',
+                                'admin': 'Administrative access'
+                            }
+                        },
+                        password: {
+                            tokenUrl: '/oauth2/login',
+                            scopes: {
+                                'read': 'Read access to resources',
+                                'write': 'Write access to resources',
+                                'admin': 'Administrative access'
+                            }
+                        }
+                    }
+                }
+            },
             schemas: {
                 PurchaseRequest: {
                     type: 'object',
@@ -264,6 +302,51 @@ const swaggerOptions = {
                             description: 'Shipment last update timestamp'
                         }
                     }
+                },
+                OAuth2Token: {
+                    type: 'object',
+                    properties: {
+                        access_token: {
+                            type: 'string',
+                            description: 'JWT access token for API authentication',
+                            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                        },
+                        token_type: {
+                            type: 'string',
+                            description: 'Token type, always Bearer',
+                            example: 'Bearer'
+                        },
+                        expires_in: {
+                            type: 'integer',
+                            description: 'Token expiration time in seconds',
+                            example: 3600
+                        },
+                        refresh_token: {
+                            type: 'string',
+                            description: 'JWT refresh token for getting new access tokens',
+                            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                        },
+                        scope: {
+                            type: 'string',
+                            description: 'Granted scopes for the token',
+                            example: 'read write'
+                        }
+                    }
+                },
+                OAuth2Error: {
+                    type: 'object',
+                    properties: {
+                        error: {
+                            type: 'string',
+                            description: 'OAuth2 error code',
+                            example: 'invalid_client'
+                        },
+                        message: {
+                            type: 'string',
+                            description: 'Human-readable error message',
+                            example: 'Invalid client credentials'
+                        }
+                    }
                 }
             }
         }
@@ -274,7 +357,8 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.use(express.json());
+// OAuth2 routes
+app.use('/oauth2', oauth2Routes);
 
 // Hardcoded configuration - no environment dependencies
 const RABBITMQ_URL = 'amqp://guest:guest@rabbitmq:5672';
@@ -365,7 +449,7 @@ function setupReplyConsumer() {
             } else {
                 console.error('ESB Orchestrator: Invalid reply message format or missing correlationId:', response);
             }
-            
+
         } catch (error) {
             console.error('Error processing reply message:', error);
         }
@@ -422,6 +506,8 @@ async function setupEventConsumers() {
  *     summary: Create a new purchase order using BPEL workflow
  *     description: Initiates a complete purchase workflow that creates an order, processes payment, and arranges shipping.
  *     tags: [Purchase]
+ *     security:
+ *       - OAuth2: [write]
  *     requestBody:
  *       required: true
  *       content:
@@ -440,11 +526,11 @@ async function setupEventConsumers() {
  *       500:
  *         description: Internal server error - workflow execution failed
  */
-app.post('/purchase', async (req, res) => {
+app.post('/purchase', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('write'), async (req, res) => {
     console.log('ESB Orchestrator: Received purchase request:', req.body);
     
     const { productId, quantity, userId, amount, shippingAddress, paymentMethod } = req.body;
-    
+
     if (!productId || !quantity || !userId || !amount || !shippingAddress || !paymentMethod) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -492,7 +578,7 @@ app.post('/purchase', async (req, res) => {
 });
 
 // REST endpoint to get workflow status
-app.get('/workflow/:workflowId', (req, res) => {
+app.get('/workflow/:workflowId', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('read'), (req, res) => {
     const { workflowId } = req.params;
     
     if (!bpelEngine) {
@@ -515,6 +601,8 @@ app.get('/workflow/:workflowId', (req, res) => {
  *     summary: Get all workflows
  *     description: Retrieves a list of all workflows and their current status
  *     tags: [Workflow]
+ *     security:
+ *       - OAuth2: [read]
  *     responses:
  *       200:
  *         description: List of all workflows retrieved successfully
@@ -542,7 +630,7 @@ app.get('/workflow/:workflowId', (req, res) => {
  *       503:
  *         description: BPEL Engine not initialized
  */
-app.get('/workflows', (req, res) => {
+app.get('/workflows', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('read'), (req, res) => {
     if (!bpelEngine) {
         return res.status(503).json({ error: 'BPEL Engine not initialized' });
     }
@@ -552,7 +640,7 @@ app.get('/workflows', (req, res) => {
 });
 
 // REST endpoint to get workflow definition
-app.get('/workflow-definition', (req, res) => {
+app.get('/workflow-definition', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('read'), (req, res) => {
     if (!placeOrderWorkflow) {
         return res.status(503).json({ error: 'PlaceOrder workflow not initialized' });
     }
@@ -562,7 +650,7 @@ app.get('/workflow-definition', (req, res) => {
 });
 
 // REST endpoint to get ESB configuration
-app.get('/esb-config', (req, res) => {
+app.get('/esb-config', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('read'), (req, res) => {
     res.status(200).json({
         exchange: ESB_CONFIG.exchange,
         queues: {
@@ -596,6 +684,8 @@ app.get('/health', (req, res) => {
  *     summary: Get purchase details by order ID
  *     description: Retrieves comprehensive purchase details including order, payment, and shipping information for a specific order. This endpoint aggregates data from multiple microservices to provide a complete view of a purchase.
  *     tags: [Purchase]
+ *     security:
+ *       - OAuth2: [read]
  *     parameters:
  *       - in: path
  *         name: orderId
@@ -693,7 +783,7 @@ app.get('/health', (req, res) => {
  *                   type: string
  *                   example: "Network error connecting to orders service"
  */
-app.get('/purchase/order/:orderId', async (req, res) => {
+app.get('/purchase/order/:orderId', oauth2Middleware.authenticateToken, oauth2Middleware.requireScope('read'), async (req, res) => {
     const { orderId } = req.params;
     
     if (!orderId) {
@@ -791,6 +881,205 @@ async function getPurchaseDetailsByOrderId(orderId) {
         };
     }
 }
+
+// OAuth2 Endpoints Documentation
+/**
+ * @swagger
+ * /oauth2/login:
+ *   post:
+ *     summary: User login with OAuth2 password grant
+ *     description: Authenticate user with username and password to get access token
+ *     tags: [OAuth2]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, password, client_id, client_secret]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: User's email address
+ *                 example: "admin@globalbooks.com"
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *                 example: "admin123"
+ *               client_id:
+ *                 type: string
+ *                 description: OAuth2 client ID
+ *                 example: "globalbooks-web-client"
+ *               client_secret:
+ *                 type: string
+ *                 description: OAuth2 client secret
+ *                 example: "web-client-secret-2024"
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OAuth2Token'
+ *       401:
+ *         description: Authentication failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OAuth2Error'
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /oauth2/client-token:
+ *   post:
+ *     summary: Get client credentials token
+ *     description: Generate access token for service-to-service authentication
+ *     tags: [OAuth2]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [client_id, client_secret]
+ *             properties:
+ *               client_id:
+ *                 type: string
+ *                 description: OAuth2 client ID
+ *                 example: "globalbooks-service-client"
+ *               client_secret:
+ *                 type: string
+ *                 description: OAuth2 client secret
+ *                 example: "service-client-secret-2024"
+ *     responses:
+ *       200:
+ *         description: Token generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OAuth2Token'
+ *       401:
+ *         description: Invalid client credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OAuth2Error'
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /oauth2/validate:
+ *   post:
+ *     summary: Validate access token
+ *     description: Check if an access token is valid and get token information
+ *     tags: [OAuth2]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: JWT access token to validate
+ *                 example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 valid:
+ *                   type: boolean
+ *                   example: true
+ *                 token_info:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       description: User ID from token
+ *                     username:
+ *                       type: string
+ *                       description: Username from token
+ *                     scope:
+ *                       type: string
+ *                       description: Granted scopes
+ *                     clientId:
+ *                       type: string
+ *                       description: Client ID that generated the token
+ *                     type:
+ *                       type: string
+ *                       description: Token type
+ *                     exp:
+ *                       type: integer
+ *                       description: Expiration timestamp
+ *                     iat:
+ *                       type: integer
+ *                       description: Issued at timestamp
+ *       401:
+ *         description: Token is invalid or expired
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OAuth2Error'
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /oauth2/config:
+ *   get:
+ *     summary: Get OAuth2 configuration
+ *     description: Retrieve OAuth2 server configuration and endpoints
+ *     tags: [OAuth2]
+ *     responses:
+ *       200:
+ *         description: OAuth2 configuration retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 authorization_endpoint:
+ *                   type: string
+ *                   description: OAuth2 authorization endpoint
+ *                 token_endpoint:
+ *                   type: string
+ *                   description: OAuth2 token endpoint
+ *                 login_endpoint:
+ *                   type: string
+ *                   description: User login endpoint
+ *                 client_token_endpoint:
+ *                   type: string
+ *                   description: Client credentials endpoint
+ *                 validate_endpoint:
+ *                   type: string
+ *                   description: Token validation endpoint
+ *                 revoke_endpoint:
+ *                   type: string
+ *                   description: Token revocation endpoint
+ *                 supported_grant_types:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Supported OAuth2 grant types
+ *                 scopes:
+ *                   type: object
+ *                   description: Available scopes and their descriptions
+ *                 token_lifetime:
+ *                   type: object
+ *                   description: Token lifetime configuration
+ */
 
 // Start server and connect to RabbitMQ
 app.listen(PORT, async () => {

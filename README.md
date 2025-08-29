@@ -114,6 +114,13 @@ MicroServices-CourceWork/
 │   ├── 📄 pom.xml                    # Maven configuration
 │   └── 📄 Dockerfile                 # Container configuration
 │
+├── 📁 token-Gen/                     # OAuth2 token generation tools
+│   ├── 📄 generate-token.bat         # Windows batch script for tokens
+│   ├── 📄 generate-token.ps1         # PowerShell token generator
+│   ├── 📄 test-token.ps1             # Token testing script
+│   ├── 📄 README.md                  # Token tools documentation
+│   └── 📄 TOKEN-GENERATOR-README.md  # Technical token documentation
+│
 ├── 📄 docker-compose.yml             # Multi-service orchestration
 ├── 📄 README.md                      # This documentation
 └── 📄 .env                           # Environment configuration
@@ -190,6 +197,60 @@ The **ESB Orchestrator Service** provides comprehensive API documentation throug
 - **Request/Response Examples**: Real data examples for testing
 - **Schema Validation**: Complete request/response schemas
 - **Error Documentation**: All possible error responses documented
+
+---
+
+## 🔐 **OAuth2 Authentication**
+
+The system implements **OAuth2 authentication** with JWT tokens for secure API access to all protected endpoints.
+
+### **🔑 Available Authentication Methods:**
+
+1. **Client Credentials Flow** - For service-to-service communication
+2. **Password Grant Flow** - For user authentication  
+3. **Scope-based Authorization** - Fine-grained access control (`read`, `write`, `admin`)
+
+### **📁 Token Generation Tools:**
+
+All token generation tools are located in the **`token-Gen/`** directory:
+
+- **`token-Gen/generate-token.bat`** - Windows batch script for interactive token generation
+- **`token-Gen/generate-token.ps1`** - PowerShell script for token generation and testing
+- **`token-Gen/test-token.ps1`** - PowerShell script to test token functionality
+- **`token-Gen/README.md`** - Comprehensive documentation for all token tools
+
+### **🚀 Quick Token Generation:**
+
+```bash
+# Navigate to token generation directory
+cd token-Gen
+
+# Generate token using batch file (Windows)
+generate-token.bat
+
+# Generate token using PowerShell
+.\generate-token.ps1
+
+# Quick client token generation
+.\generate-token.ps1 -Method client
+```
+
+### **🔒 Protected Endpoints:**
+
+All API endpoints (except `/health` and `/oauth2/*`) require valid OAuth2 tokens:
+
+- **Authorization Header**: `Authorization: Bearer YOUR_TOKEN_HERE`
+- **Token Lifetime**: 1 hour (3600 seconds)
+- **Required Scopes**: 
+  - `read` - For GET endpoints
+  - `write` - For POST/PUT endpoints
+  - `admin` - For administrative operations
+
+### **🧪 Testing with Tokens:**
+
+1. **Generate token** using tools in `token-Gen/` directory
+2. **Add Authorization header** to your requests
+3. **Test protected endpoints** with valid tokens
 
 ---
 
