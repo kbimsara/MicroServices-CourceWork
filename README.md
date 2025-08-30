@@ -138,7 +138,7 @@ MicroServices-CourceWork/
 
 ### **1. Clone and Setup**
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/kbimsara/MicroServices-CourceWork.git
 cd MicroServices-CourceWork
 ```
 
