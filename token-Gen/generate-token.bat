@@ -135,7 +135,7 @@ goto menu
 
 :invalid_choice
 echo.
-echo ❌ Invalid choice! Please enter 1-4.
+echo  Invalid choice! Please enter 1-4.
 echo.
 pause
 goto menu
@@ -167,7 +167,8 @@ goto invalid_choice
 
 :exit
 echo.
-echo 👋 Thank you for using OAuth2 Token Generator!
+echo  Thank you for using OAuth2 Token Generator!
+echo  ===========================================
 echo.
 pause
 exit
