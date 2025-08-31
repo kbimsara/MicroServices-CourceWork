@@ -17,8 +17,7 @@ The **GlobalBooks ESB Orchestrator Service** is a comprehensive microservices ar
 ## 🚀 **System Architecture**
 
 ### **📊 High-Level System Diagram**
-
-![High-Level Architecture](design/soaHigh-Level Architecture.drawio.png)
+![High-Level System Architecture](design/soaHigh-Level%20Architecture.drawio.png)
 
 ---
 
@@ -282,19 +281,29 @@ All API endpoints (except `/health` and `/oauth2/*`) require valid OAuth2 tokens
 ### **🏗️ Workflow Architecture**
 The system implements a **BPEL (Business Process Execution Language)** workflow engine that orchestrates the complete purchase process:
 
-```mermaid
-flowchart LR
-  subgraph PlaceOrder BPEL Flow
-    A[Create Order] -->|on success| B[Process Payment]
-    A -->|on failure| XA[Fail Workflow]
-    B -->|on success| C[Arrange Shipping]
-    B -->|on failure| CB[Compensate: Cancel Order]
-    C -->|on success| D[Complete Workflow]
-    C -->|on failure| CC[Compensate: Refund Payment]
-  end
+![BPEL Workflow Diagram](design/BPEL.drawio.png)
 
-  style CB stroke:#f66,stroke-width:2px
-  style CC stroke:#f66,stroke-width:2px
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PLACEORDER WORKFLOW                              │
+│                                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
+│  │   STEP 1    │───▶│   STEP 2    │───▶│   STEP 3    │                    │
+│  │  CREATE     │    │  PROCESS    │    │  ARRANGE    │                    │
+│  │   ORDER     │    │  PAYMENT    │    │  SHIPPING   │                    │
+│  └─────────────┘    └─────────────┘    └─────────────┘                    │
+│         │                   │                   │                         │
+│         ▼                   ▼                   ▼                         │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
+│  │   SUCCESS   │    │   SUCCESS   │    │   SUCCESS   │                    │
+│  │   FAILURE   │    │   FAILURE   │    │   FAILURE   │                    │
+│  └─────────────┘    └─────────────┘    └─────────────┘                    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    COMPENSATION LOGIC                              │   │
+│  │              (Rollback on any step failure)                        │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### **⚙️ Workflow Features**
