@@ -1,0 +1,7 @@
+Invoke-RestMethod -Uri "http://localhost:3003/oauth2/client-token" -Method POST -Headers @{ "Content-Type"="application/json" } -Body '{"client_id":"globalbooks-service-client","client_secret":"service-client-secret-2024"}'
+
+
+
+$token = "<ACCESS_TOKEN>"; Invoke-RestMethod -Uri "http://localhost:3003/workflows" -Headers @{ Authorization = "Bearer $token" }
+
+
