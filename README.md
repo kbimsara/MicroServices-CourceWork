@@ -283,28 +283,6 @@ The system implements a **BPEL (Business Process Execution Language)** workflow 
 
 ![BPEL Workflow Diagram](design/BPEL.drawio.png)
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PLACEORDER WORKFLOW                              │
-│                                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
-│  │   STEP 1    │───▶│   STEP 2    │───▶│   STEP 3    │                    │
-│  │  CREATE     │    │  PROCESS    │    │  ARRANGE    │                    │
-│  │   ORDER     │    │  PAYMENT    │    │  SHIPPING   │                    │
-│  └─────────────┘    └─────────────┘    └─────────────┘                    │
-│         │                   │                   │                         │
-│         ▼                   ▼                   ▼                         │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
-│  │   SUCCESS   │    │   SUCCESS   │    │   SUCCESS   │                    │
-│  │   FAILURE   │    │   FAILURE   │    │   FAILURE   │                    │
-│  └─────────────┘    └─────────────┘    └─────────────┘                    │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                    COMPENSATION LOGIC                              │   │
-│  │              (Rollback on any step failure)                        │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
 
 ### **⚙️ Workflow Features**
 - **Step-by-step execution** with timeout handling
