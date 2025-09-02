@@ -458,22 +458,11 @@ This project is developed for academic purposes as part of the **SOA & Microserv
 
 ---
 
-## 📞 **Support & Contact**
-
-### **🐛 Issue Reporting**
-For technical issues or questions:
-1. Check the troubleshooting section above
-2. Review service logs for error details
-3. Verify all services are running and healthy
-4. Test individual endpoints through Swagger UI
-
 ### **📚 Additional Resources**
 - **Swagger UI**: http://localhost:3003/api-docs
 - **RabbitMQ Management**: http://localhost:15672
 - **Service Health**: GET `/health` on each service
 - **Project Repository**: Check source code for implementation details
 
----
 
-**🎯 Happy coding with your ESB Orchestrator Service! 🚀**
 
